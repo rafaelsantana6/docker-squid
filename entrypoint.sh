@@ -2,6 +2,7 @@
 set -e
 
 create_log_dir() {
+  echo "mkdir -p ${SQUID_LOG_DIR}"
   mkdir -p ${SQUID_LOG_DIR}
   chmod -R 755 ${SQUID_LOG_DIR}
   chown -R ${SQUID_USER}:${SQUID_USER} ${SQUID_LOG_DIR}
@@ -13,8 +14,8 @@ create_cache_dir() {
 }
 
 change_uid_gid() {
-  usermod -u ${UID} proxy
-  groupmod -g ${GID} proxy
+  usermod -u ${UID} ${SQUID_USER}
+  groupmod -g ${GID} ${SQUID_USER}
 }
 
 echo "UID: ${UID}"
@@ -35,6 +36,9 @@ create_log_dir
 
 echo "Creating CACHE directory..."
 create_cache_dir
+
+echo "Launching logger..."
+/sbin/logger.sh &
 
 # allow arguments to be passed to squid
 if [[ ${1:0:1} = '-' ]]; then

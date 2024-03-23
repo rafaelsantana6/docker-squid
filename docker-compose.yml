@@ -5,16 +5,19 @@ services:
     image: rafaelsantana6/squid:latest
     hostname: squidproxy
     container_name: squidproxy
-    environment:
-      - "UID=1000"
-      - "GID=1000"
-      - "CONFIG_FOLDER=/mnt/armazenamento/docker/config"
-      - "DATA_FOLDER=/mnt/armazenamento/docker/data"
     ports:
       - "3128:3128"
+    # networks:
+    #   - media-network
+    environment:
+      - UID=1000
+      - GID=1000
     volumes:
       - "${CONFIG_FOLDER}/squidproxy/squid.conf:/etc/squid/squid.conf:ro"
       - "${CONFIG_FOLDER}/squidproxy/passwords:/etc/squid/passwords:ro"
-      - "${DATA_FOLDER}/squidproxy:/var/log/squid"
-      - "${DATA_FOLDER}/squidproxy:/var/spool/squid"
+      - "${DATA_FOLDER}/squidproxy/logs:/var/log/squid"
+      - "${DATA_FOLDER}/squidproxy/cache:/var/spool/squid"
     restart: unless-stopped
+# networks:
+#   media-network:
+#     external: true

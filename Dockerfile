@@ -11,12 +11,19 @@ RUN sed -i 's/htt[p|ps]:\/\/archive.ubuntu.com\/ubuntu\//mirror:\/\/mirrors.ubun
 
 RUN apt-get update && \
  DEBIAN_FRONTEND=noninteractive && \
- apt-get install -y --no-install-recommends squid=${SQUID_VERSION}* && \
+ apt-get install -y --no-install-recommends sudo squid=${SQUID_VERSION}* && \
  rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /sbin/entrypoint.sh
+COPY logger.sh /sbin/logger.sh
 
-RUN chmod 755 /sbin/entrypoint.sh
+RUN chmod 755 /sbin/entrypoint.sh && \
+    chmod 755 /sbin/logger.sh && \
+    usermod -aG root proxy && \
+    usermod -aG sudo proxy && \
+    usermod -aG tty proxy && \
+    echo 'Defaults:proxy !requiretty' > /etc/sudoers.d/proxy && \
+    echo "proxy ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/proxy
 
 EXPOSE 3128/tcp
 
